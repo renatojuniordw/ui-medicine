@@ -4,7 +4,9 @@ import { ApiResponse } from '../models/api.model';
 
 export const getMedicine = async (
   page: number,
-  limit: number
+  pageSize: number
 ): Promise<ApiResponse> => {
-  return await api.get<ApiResponse>(`/medicine?page=${page}&limit=${limit}`);
+  return await api.get<ApiResponse>(
+    `/medicine?page=${page}&pageSize=${pageSize}`
+  );
 };
