@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { login } from '../../services/auth.service';
 
@@ -10,7 +10,6 @@ const Login = () => {
 
     try {
       const response = await login(values);
-      console.log(response);
       const dataUser = response.data;
 
       localStorage.setItem('dataUser', JSON.stringify(dataUser));

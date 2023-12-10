@@ -1,5 +1,6 @@
 export interface Medicine {
   id?: number;
+  key?: number;
   reference: string;
   activeIngredient: string;
   tradeName: string;

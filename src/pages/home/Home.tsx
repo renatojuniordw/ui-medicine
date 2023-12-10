@@ -59,14 +59,12 @@ const Home = () => {
         ...prevPagination,
         total,
       }));
-      console.log(dataSource);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
     }
   };
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    console.log(pageSize);
+  const handlePageChange = (page: number) => {
     setPagination((prevPagination: any) => ({
       ...prevPagination,
       current: page,
