@@ -11,3 +11,9 @@ export interface Medicine {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface FilterMedicine {
+  reference?: string;
+  activeIngredient?: string;
+  tradeName?: string;
+}

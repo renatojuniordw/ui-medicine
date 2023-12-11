@@ -1,15 +1,45 @@
-import ServiceHook from '../models/service-hook.model';
 import { useCallback, useState } from 'react';
-import { getMedicine } from '../services/medicine.service';
-import { Medicine } from '../models/medicine.model';
 
-export function useGetAllMedicine(
-  page: number,
-  pageSize: number
-): ServiceHook<Medicine[]> {
-  const [data, setData] = useState<any>();
+import ServiceHook from '../models/service-hook.model';
+
+import {
+  getActiveIngredient,
+  getReference,
+  getTradeName,
+} from '../services/medicine.service';
+
+export function useGetActiveIngredient(): ServiceHook<
+  { activeIngredient: string }[]
+> {
+  const [data, setData] = useState<any>([]);
   const execute = async (): Promise<void> => {
-    await getMedicine(page, pageSize)
+    await getActiveIngredient()
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  return [data, useCallback(execute, [])];
+}
+
+export function useGetReference(): ServiceHook<{ reference: string }[]> {
+  const [data, setData] = useState<any>([]);
+  const execute = async (): Promise<void> => {
+    await getReference()
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  return [data, useCallback(execute, [])];
+}
+
+export function useGetTradeName(): ServiceHook<{ tradeName: string }[]> {
+  const [data, setData] = useState<any>([]);
+  const execute = async (): Promise<void> => {
+    await getTradeName()
       .then((response) => {
         setData(response.data);
       })

@@ -2,13 +2,33 @@ import { useEffect, useState } from 'react';
 import { Form, Select, Button, Row, Col, Table, Pagination } from 'antd';
 
 import { getMedicine } from '../../services/medicine.service';
+import {
+  useGetActiveIngredient,
+  useGetReference,
+  useGetTradeName,
+} from '../../hooks/medicine.hook';
+
+import { FilterMedicine, Medicine } from '../../models/medicine.model';
 
 const Home = () => {
-  const [dataSource, setDataSource] = useState([]);
+  const [dataActiveIngredient, fecthDataActiveIngredient] =
+    useGetActiveIngredient();
+  const [dataReference, fecthDataReference] = useGetReference();
+  const [dataTradeName, fecthDataTradeName] = useGetTradeName();
+
+  const [dataSource, setDataSource] = useState<Medicine[]>([]);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
+  });
+
+  const [stateFilter, setStateFilter] = useState<{
+    isFiltering: boolean;
+    values: FilterMedicine;
+  }>({
+    isFiltering: false,
+    values: {},
   });
 
   const columns = [
@@ -49,19 +69,33 @@ const Home = () => {
     },
   ];
 
-  const fetchData = async (page: number, pageSize: number) => {
-    try {
-      const response = await getMedicine(page, pageSize);
-      const { data, total } = response.data;
+  useEffect(() => {
+    if (dataActiveIngredient.length === 0) fecthDataActiveIngredient();
+    if (dataReference.length === 0) fecthDataReference();
+    if (dataTradeName.length === 0) fecthDataTradeName();
+  }, []);
 
-      setDataSource(data);
-      setPagination((prevPagination) => ({
-        ...prevPagination,
-        total,
-      }));
-    } catch (error) {
-      console.error('Erro ao buscar dados:', error);
-    }
+  useEffect(() => {
+    const temp = stateFilter.isFiltering
+      ? { current: 1, pageSize: 10 }
+      : { current: pagination.current, pageSize: pagination.pageSize };
+
+    fetchData(temp.current, temp.pageSize);
+  }, [pagination.current, pagination.pageSize]);
+
+  const fetchData = (
+    page: number,
+    pageSize: number,
+    values?: FilterMedicine
+  ) => {
+    console.log(values);
+    getMedicine(page, pageSize, values || stateFilter.values).then(
+      (response) => {
+        const { data, total } = response.data;
+        ruleSetValueTable(data, total);
+        setStateFilter((prev) => ({ ...prev, isFiltering: false }));
+      }
+    );
   };
 
   const handlePageChange = (page: number) => {
@@ -71,75 +105,117 @@ const Home = () => {
     }));
   };
 
-  useEffect(() => {
-    fetchData(pagination.current, pagination.pageSize);
-  }, [pagination.current, pagination.pageSize]);
+  const onFinish = (values: FilterMedicine) => {
+    resetPagination();
+    fetchData(1, 10, values);
+    setStateFilter({ values, isFiltering: true });
+  };
 
-  const onFinish = (values: any) => {
-    console.log('Valores do filtro:', values);
+  const ruleSetValueTable = (data: Medicine[], total: number) => {
+    setDataSource(data);
+    setPagination((prevPagination) => ({
+      ...prevPagination,
+      total,
+    }));
+  };
+
+  const resetPagination = () => {
+    setPagination({
+      current: 1,
+      pageSize: 10,
+      total: 0,
+    });
   };
 
   return (
     <div>
-      <Row gutter={16} align="middle">
-        <Form onFinish={onFinish} layout="inline">
-          <Row gutter={16}>
-            <Col span={6}>
-              <Form.Item label="Opção 1" name="option1">
-                <Select placeholder="Selecione">
-                  <Select.Option value="value1">Opção 1</Select.Option>
-                  <Select.Option value="value2">Opção 2</Select.Option>
-                  {/* Adicione mais opções conforme necessário */}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Opção 2" name="option2">
-                <Select placeholder="Selecione">
-                  <Select.Option value="value1">Opção 1</Select.Option>
-                  <Select.Option value="value2">Opção 2</Select.Option>
-                  {/* Adicione mais opções conforme necessário */}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Opção 3" name="option3">
-                <Select placeholder="Selecione">
-                  <Select.Option value="value1">Opção 1</Select.Option>
-                  <Select.Option value="value2">Opção 2</Select.Option>
-                  {/* Adicione mais opções conforme necessário */}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Opção 4" name="option4">
-                <Select placeholder="Selecione">
-                  <Select.Option value="value1">Opção 1</Select.Option>
-                  <Select.Option value="value2">Opção 2</Select.Option>
-                  {/* Adicione mais opções conforme necessário */}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Filtrar
-            </Button>
-          </Form.Item>
-        </Form>
-      </Row>
+      <Form onFinish={onFinish} layout="vertical">
+        <Row gutter={16}>
+          <Col span={6} style={{ marginBottom: '16px' }}>
+            <Form.Item
+              label="Referência"
+              name="reference"
+              style={{ width: '100%' }}
+            >
+              <Select placeholder="Selecione" style={{ width: '100%' }}>
+                {dataReference.map((item) => {
+                  return (
+                    <Select.Option value={item.reference} key={item.reference}>
+                      {item.reference}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6} style={{ marginBottom: '16px' }}>
+            <Form.Item
+              label="Princípio ativo"
+              name="activeIngredient"
+              style={{ width: '100%' }}
+            >
+              <Select placeholder="Selecione" style={{ width: '100%' }}>
+                {dataActiveIngredient.map((item) => {
+                  return (
+                    <Select.Option
+                      value={item.activeIngredient}
+                      key={item.activeIngredient}
+                    >
+                      {item.activeIngredient}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6} style={{ marginBottom: '16px' }}>
+            <Form.Item
+              label="Nome comercial do medicamento similar"
+              name="tradeName"
+              style={{ width: '100%' }}
+            >
+              <Select placeholder="Selecione" style={{ width: '100%' }}>
+                {dataTradeName.map((item) => {
+                  return (
+                    <Select.Option value={item.tradeName} key={item.tradeName}>
+                      {item.tradeName}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+
+          <Col
+            span={2}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              marginBottom: '16px',
+            }}
+          >
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{ width: '100%' }}
+              >
+                Filtrar
+              </Button>
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
 
       <Row gutter={16} style={{ marginTop: 16 }}>
-        <Col span={24}>
-          <Table dataSource={dataSource} columns={columns} pagination={false} />
-          <Pagination
-            current={pagination.current}
-            pageSize={pagination.pageSize}
-            total={pagination.total}
-            onChange={handlePageChange}
-            showSizeChanger={false}
-          />
-        </Col>
+        <Table dataSource={dataSource} columns={columns} pagination={false} />
+        <Pagination
+          current={pagination.current}
+          pageSize={pagination.pageSize}
+          total={pagination.total}
+          onChange={handlePageChange}
+          showSizeChanger={false}
+        />
       </Row>
     </div>
   );
