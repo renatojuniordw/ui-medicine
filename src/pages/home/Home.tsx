@@ -237,12 +237,18 @@ const Home = () => {
         </Row>
       </Form>
 
-      <Row gutter={16} style={{ marginTop: 16 }}>
+      <Row gutter={16} style={{ marginTop: 16 }} align="middle">
         <Table
           dataSource={dataSource}
           columns={configTable.columns}
           pagination={false}
         />
+      </Row>
+      <Row
+        gutter={16}
+        style={{ marginTop: 16, float: 'inline-end' }}
+        align="middle"
+      >
         <Pagination
           current={pagination.current}
           pageSize={pagination.pageSize}

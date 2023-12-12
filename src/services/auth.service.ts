@@ -7,9 +7,10 @@ export const login = async (auth: Auth): Promise<ApiResponse> => {
   return await api.post<ApiResponse>(`/auth/login`, auth);
 };
 
-export const AuthService = {
-  login: (token: string) => {
-    localStorage.setItem('token', token);
+export const authService = {
+  login: (dataUser: any) => {
+    localStorage.setItem('dataUser', JSON.stringify(dataUser));
+    localStorage.setItem('token', dataUser.token);
   },
   logout: () => {
     localStorage.removeItem('token');

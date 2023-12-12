@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { login } from '../../services/auth.service';
+import { authService, login } from '../../services/auth.service';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (values: any) => {
     setLoading(true);
@@ -12,8 +14,8 @@ const Login = () => {
       const response = await login(values);
       const dataUser = response.data;
 
-      localStorage.setItem('dataUser', JSON.stringify(dataUser));
-      localStorage.setItem('token', dataUser.token);
+      authService.login(dataUser);
+      navigate('/home');
 
       message.success('Login successful');
     } catch (error) {
