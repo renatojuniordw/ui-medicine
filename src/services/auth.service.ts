@@ -4,7 +4,7 @@ import { Auth } from '../models/auth.model';
 import { ApiResponse } from '../models/api.model';
 
 export const login = async (auth: Auth): Promise<ApiResponse> => {
-  return await api.post<ApiResponse>(`/auth/login`, auth);
+  return await api.post<ApiResponse>(`/auth/signin`, auth);
 };
 
 export const authService = {

@@ -8,9 +8,7 @@ import {
   getTradeName,
 } from '../services/medicine.service';
 
-export function useGetActiveIngredient(): ServiceHook<
-  { activeIngredient: string }[]
-> {
+export function useGetActiveIngredient(): ServiceHook<{ value: string }[]> {
   const [data, setData] = useState<any>([]);
   const execute = async (): Promise<void> => {
     await getActiveIngredient()
@@ -23,7 +21,7 @@ export function useGetActiveIngredient(): ServiceHook<
   return [data, useCallback(execute, [])];
 }
 
-export function useGetReference(): ServiceHook<{ reference: string }[]> {
+export function useGetReference(): ServiceHook<{ value: string }[]> {
   const [data, setData] = useState<any>([]);
   const execute = async (): Promise<void> => {
     await getReference()
@@ -36,7 +34,7 @@ export function useGetReference(): ServiceHook<{ reference: string }[]> {
   return [data, useCallback(execute, [])];
 }
 
-export function useGetTradeName(): ServiceHook<{ tradeName: string }[]> {
+export function useGetTradeName(): ServiceHook<{ value: string }[]> {
   const [data, setData] = useState<any>([]);
   const execute = async (): Promise<void> => {
     await getTradeName()

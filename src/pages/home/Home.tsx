@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Form, Select, Button, Row, Col, Table, Pagination } from 'antd';
+import { Form, Row, Col, Table, Button, Pagination, AutoComplete } from 'antd';
 
 import { getMedicine } from '../../services/medicine.service';
 import {
@@ -153,62 +153,54 @@ const Home = () => {
   };
 
   const handleReset = () => {
-    resetPagination();
-    setStateFilter({ values: {}, isFiltering: false });
     form.resetFields();
-
-    fetchData(1, 10);
+    setStateFilter({ values: {}, isFiltering: false });
+    form.submit();
   };
   return (
     <div>
       <Form form={form} onFinish={onFinish} layout="vertical">
         <Row gutter={16}>
           <Col xs={12} md={6} style={{ marginBottom: '16px' }}>
-            <Form.Item
-              // label="Referência"
-              name="reference"
-              style={{ width: '100%' }}
-            >
-              <Select placeholder="Referência" style={{ width: '100%' }}>
-                {dataReference.map((item) => (
-                  <Select.Option value={item.reference} key={item.reference}>
-                    {item.reference}
-                  </Select.Option>
-                ))}
-              </Select>
+            <Form.Item name="reference" style={{ width: '100%' }}>
+              <AutoComplete
+                style={{ width: '100%' }}
+                options={dataReference}
+                placeholder="Referência"
+                filterOption={(inputValue, option) =>
+                  option!.value
+                    .toUpperCase()
+                    .indexOf(inputValue.toUpperCase()) !== -1
+                }
+              />
             </Form.Item>
           </Col>
           <Col xs={12} md={6} style={{ marginBottom: '16px' }}>
-            <Form.Item
-              // label="Princípio ativo"
-              name="activeIngredient"
-              style={{ width: '100%' }}
-            >
-              <Select placeholder="Princípio ativo" style={{ width: '100%' }}>
-                {dataActiveIngredient.map((item) => (
-                  <Select.Option
-                    value={item.activeIngredient}
-                    key={item.activeIngredient}
-                  >
-                    {item.activeIngredient}
-                  </Select.Option>
-                ))}
-              </Select>
+            <Form.Item name="activeIngredient" style={{ width: '100%' }}>
+              <AutoComplete
+                style={{ width: '100%' }}
+                options={dataActiveIngredient}
+                placeholder="Princípio ativo"
+                filterOption={(inputValue, option) =>
+                  option!.value
+                    .toUpperCase()
+                    .indexOf(inputValue.toUpperCase()) !== -1
+                }
+              />
             </Form.Item>
           </Col>
           <Col xs={12} md={6} style={{ marginBottom: '16px' }}>
-            <Form.Item
-              // label="Nome comercial"
-              name="tradeName"
-              style={{ width: '100%' }}
-            >
-              <Select placeholder="Nome comercial" style={{ width: '100%' }}>
-                {dataTradeName.map((item) => (
-                  <Select.Option value={item.tradeName} key={item.tradeName}>
-                    {item.tradeName}
-                  </Select.Option>
-                ))}
-              </Select>
+            <Form.Item name="tradeName" style={{ width: '100%' }}>
+              <AutoComplete
+                style={{ width: '100%' }}
+                options={dataTradeName}
+                placeholder="Nome comercial"
+                filterOption={(inputValue, option) =>
+                  option!.value
+                    .toUpperCase()
+                    .indexOf(inputValue.toUpperCase()) !== -1
+                }
+              />
             </Form.Item>
           </Col>
           <Col xs={6} md={3} style={{ marginBottom: '16px' }}>
