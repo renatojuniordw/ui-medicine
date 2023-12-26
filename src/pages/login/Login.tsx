@@ -10,20 +10,21 @@ const Login = () => {
   const handleLogin = async (values: any) => {
     setLoading(true);
 
-    try {
-      const response = await login(values);
-      const dataUser = response.data;
+    await login(values)
+      .then((response) => {
+        const dataUser = response.data;
+        const isConfirmedEmail = !dataUser.isConfirmedEmail;
+        authService.login(dataUser);
 
-      authService.login(dataUser);
-      navigate('/home');
-
-      message.success('Login successful');
-    } catch (error) {
-      console.error('Error during login:', error);
-      message.error('Login failed');
-    } finally {
-      setLoading(false);
-    }
+        navigate(isConfirmedEmail ? '/email-verification' : '/home');
+      })
+      .catch((error) => {
+        console.error('Error during login:', error);
+        message.error('Login failed');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
