@@ -7,6 +7,8 @@ import Login from './pages/login/Login';
 import { authService } from './services/auth.service';
 import EmailVerificationNotice from './pages/EmailVerification/email-verification-notice';
 import EmailConfirmationSuccess from './pages/EmailConfirmationSuccess/email-confirmation-success';
+import ForgotPassword from './pages/ForgotPassword/forgot-password';
+import ResetPassword from './pages/ResetPassword/reset-password';
 
 function PrivateRoute({ children }: any) {
   const auth = authService.isAuthenticated();
@@ -27,7 +29,9 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/email-verification" element={<EmailVerificationNotice />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route
         path="/email-confirmation/:token"
         element={<EmailConfirmationSuccess />}
